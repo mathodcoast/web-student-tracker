@@ -1,4 +1,4 @@
-package com.mathodcoast.web.controller;
+package com.mathodcoast.web.servlet;
 
 import com.mathodcoast.dao.*;
 import com.mathodcoast.model.*;

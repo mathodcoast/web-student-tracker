@@ -11,6 +11,10 @@
     <div id="wrapper">
         <div id="header">
             <h2>FooBar University</h2>
+            <hr>
+            <form action="logout" method="post">
+                <input type="submit" value="Logout" class="add-student-button">
+            </form>
         </div>
     </div>
 
