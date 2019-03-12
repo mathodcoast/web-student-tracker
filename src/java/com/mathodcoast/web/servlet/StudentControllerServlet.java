@@ -3,8 +3,9 @@ package com.mathodcoast.web.servlet;
 import com.mathodcoast.dao.*;
 import com.mathodcoast.model.*;
 
-import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,15 +18,14 @@ import java.util.List;
 @WebServlet ( name = "StudentControllerServlet", urlPatterns = "/students" )
 public class StudentControllerServlet extends HttpServlet {
 
-    @Resource ( name = "jdbc/web_student_tracker" )
-    private DataSource dataSource;
-    private StudentDaoImpl studentDaoImpl;
+    private StudentDao studentDao;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         try {
-            studentDaoImpl = new StudentDaoImpl(dataSource);
+            ServletContext servletContext = config.getServletContext();
+            studentDao = new StudentDaoImpl((DataSource) servletContext.getAttribute("datasource"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class StudentControllerServlet extends HttpServlet {
     }
 
     private void listStudents(HttpServletRequest request,HttpServletResponse response) throws Exception {
-        List<Student> studentList = studentDaoImpl.getStudentsList();
+        List<Student> studentList = studentDao.getStudentsList();
 
         request.setAttribute("STUDENT_LIST",studentList);
 
@@ -89,7 +89,7 @@ public class StudentControllerServlet extends HttpServlet {
     private void addStudent(HttpServletRequest request,HttpServletResponse response) throws Exception {
         Student student = getStudentFromRequestWithoutId(request);
 
-        studentDaoImpl.addStudent(student);
+        studentDao.addStudent(student);
 
         response.sendRedirect(request.getContextPath() + "/students?command=LIST");
     }
@@ -97,7 +97,7 @@ public class StudentControllerServlet extends HttpServlet {
     private void loadStudent(HttpServletRequest request,HttpServletResponse response) throws Exception {
         int studentId = Integer.parseInt(request.getParameter("studentId"));
 
-        Student student = studentDaoImpl.getStudentById(studentId);
+        Student student = studentDao.getStudentById(studentId);
 
         request.setAttribute("THE_STUDENT",student);
 
@@ -111,7 +111,7 @@ public class StudentControllerServlet extends HttpServlet {
 
         student.setId(Integer.parseInt(studentId));
 
-        studentDaoImpl.updateStudent(student);
+        studentDao.updateStudent(student);
 
         response.sendRedirect(request.getContextPath() + "/students?command=LIST");
     }
@@ -120,7 +120,7 @@ public class StudentControllerServlet extends HttpServlet {
         String searchValue = request.getParameter("searchValue");
 
         if (searchValue != null && searchValue.trim().length() > 0) {
-            List<Student> searchedStudentList = studentDaoImpl.searchStudentsByValue(searchValue);
+            List<Student> searchedStudentList = studentDao.searchStudentsByValue(searchValue);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("/list-students.jsp");
 
@@ -143,7 +143,7 @@ public class StudentControllerServlet extends HttpServlet {
     private void deleteStudent(HttpServletRequest request,HttpServletResponse response) throws Exception {
         int studentId = Integer.parseInt(request.getParameter("studentId"));
 
-        studentDaoImpl.deleteStudentById(studentId);
+        studentDao.deleteStudentById(studentId);
 
         response.sendRedirect(request.getContextPath() + "/students?command=LIST");
     }

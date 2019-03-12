@@ -8,6 +8,8 @@
     <link type="text/css" rel="stylesheet" href="css/add-student-style.css">
 
 </head>
+<html>
+<body>
     <div id="wrapper">
         <div id="header">
             <h2>FooBar University</h2>
@@ -56,9 +58,9 @@
         </p>
     </div>
 
-<html>
 
-<body>
+
+
 
 </body>
 
